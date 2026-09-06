@@ -269,6 +269,26 @@
       .join("");
   }
 
+  function therapistPhotoHtml(src, alt) {
+    var safeSrc = escapeAttr(src);
+    var safeAlt = escapeAttr(alt);
+    var webp = /\.jpe?g$/i.test(src) ? src.replace(/\.jpe?g$/i, ".webp") : "";
+    var imgTag =
+      '<img src="' +
+      safeSrc +
+      '" alt="' +
+      safeAlt +
+      '" width="1536" height="1024" loading="lazy" decoding="async" />';
+    var inner = webp
+      ? '<picture><source type="image/webp" srcset="' +
+        escapeAttr(webp) +
+        '" />' +
+        imgTag +
+        "</picture>"
+      : imgTag;
+    return '<div class="therapist-photo">' + inner + "</div>";
+  }
+
   function therapistCardHtml(t, digits) {
     var nameZh = t.nameZh || "";
     var nameEn = t.nameEn || "";
@@ -290,11 +310,7 @@
       "您好，想預約技師【" + displayName + "】";
     var href = waUrl(digits, waText);
     var img = t.image
-      ? '<div class="therapist-photo" style="background-image:url(\'' +
-        escapeAttr(t.image) +
-        "')\" role=\"img\" aria-label=\"" +
-        escapeAttr(t.imageAlt || displayName) +
-        '"></div>'
+      ? therapistPhotoHtml(t.image, t.imageAlt || displayName)
       : '<div class="therapist-photo therapist-photo--placeholder" aria-hidden="true"></div>';
     return (
       '<article class="therapist-card pkg-card" id="therapist-' +
