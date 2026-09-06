@@ -294,9 +294,8 @@
   }
 
   function therapistCardHtml(t, digits) {
-    var nameZh = t.nameZh || "";
     var nameEn = t.nameEn || "";
-    var displayName = nameZh + (nameEn ? " " + nameEn : "");
+    var displayName = nameEn || t.nameZh || "";
     var specialties = (t.specialties || [])
       .map(function (s) {
         return '<li class="therapist-chip">' + escapeHtml(s) + "</li>";
