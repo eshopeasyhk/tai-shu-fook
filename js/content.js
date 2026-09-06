@@ -1,18 +1,12 @@
-(function () {
+(function(){
   "use strict";
-  fetch("https://eshopeasyhk.github.io/massage-shop-demo/js/content.js?_=" + Date.now())
-    .then(function (r) {
-      if (!r.ok) throw new Error("demo content.js " + r.status);
+  var parts=["js/content-part1.js","js/content-part2.js","js/content-part3.js"];
+  Promise.all(parts.map(function(u){
+    return fetch(u+"?_="+Date.now()).then(function(r){
+      if(!r.ok) throw new Error(u+" "+r.status);
       return r.text();
-    })
-    .then(function (code) {
-      var patched = code.replace(
-        /var BASE = \(function \(\) \{[\s\S]*?\}\)\(\);/,
-        'var BASE = "./";'
-      );
-      (0, eval)(patched);
-    })
-    .catch(function (err) {
-      console.warn("[content.js loader]", err);
     });
+  })).then(function(chunks){
+    (0,eval)(chunks.join(""));
+  }).catch(function(e){ console.warn("[content.js]", e); });
 })();
