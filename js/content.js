@@ -122,6 +122,10 @@
       if (contact.mapsUrl) a.href = contact.mapsUrl;
       if (contact.mapsLabel) a.textContent = contact.mapsLabel;
     });
+    var embed = document.querySelector("[data-cms='mapsEmbed']");
+    if (embed && contact.mapsEmbed) {
+      embed.src = contact.mapsEmbed;
+    }
 
   }
 
@@ -357,25 +361,58 @@
     }
     if (!therapists || !therapists.length) {
       el.innerHTML = "";
+    } else {
+      var digits = (contact && contact.phoneDigits) || "85251057090";
+      el.innerHTML = therapists
+        .map(function (t) {
+          return therapistCardHtml(t, digits);
+        })
+        .join("");
+    }
+
+    renderShopGallery(images);
+  }
+
+  function shopPictureHtml(src, webp, alt) {
+    var img =
+      '<img src="' +
+      escapeAttr(src) +
+      '" alt="' +
+      escapeAttr(alt || "") +
+      '" loading="lazy" decoding="async" />';
+    if (webp) {
+      return (
+        '<picture><source type="image/webp" srcset="' +
+        escapeAttr(webp) +
+        '" />' +
+        img +
+        "</picture>"
+      );
+    }
+    return img;
+  }
+
+  function renderShopGallery(images) {
+    var el = document.querySelector("[data-cms='shopGallery']");
+    if (!el || !images) return;
+    var photos = images.shopPhotos || [];
+    if (!photos.length) {
+      el.innerHTML = "";
       return;
     }
-    var digits = (contact && contact.phoneDigits) || "85251057090";
-    el.innerHTML = therapists
-      .map(function (t) {
-        return therapistCardHtml(t, digits);
+    el.innerHTML = photos
+      .map(function (p) {
+        var caption = p.caption
+          ? "<figcaption>" + escapeHtml(p.caption) + "</figcaption>"
+          : "";
+        return (
+          '<figure class="shop-shot">' +
+          shopPictureHtml(p.src, p.webp, p.alt) +
+          caption +
+          "</figure>"
+        );
       })
       .join("");
-
-    var ambient = document.querySelector(".shop-ambient-photo");
-    if (ambient && images && images.shopAmbient) {
-      ambient.style.backgroundImage =
-        'linear-gradient(160deg, rgba(13,10,8,0.25), rgba(13,10,8,0.55)), url("' +
-        images.shopAmbient +
-        '")';
-      if (images.shopAmbientAlt) {
-        ambient.setAttribute("aria-label", images.shopAmbientAlt);
-      }
-    }
   }
 
   function apply(data) {
@@ -410,9 +447,28 @@
       var photo = document.querySelector(".hero-photo");
       if (photo) {
         photo.style.backgroundImage =
-          'linear-gradient(160deg, rgba(13,10,8,0.35), rgba(13,10,8,0.55)), url("' +
+          'linear-gradient(160deg, rgba(13,10,8,0.28), rgba(13,10,8,0.42)), url("' +
           data.images.hero +
           '")';
+        if (data.images.heroAlt) {
+          photo.setAttribute("aria-label", data.images.heroAlt);
+        }
+      }
+      setText("[data-cms='heroCredit']", data.images.heroCredit || "店舖實景");
+    }
+    if (data.images && data.images.about) {
+      var aboutPhoto = document.querySelector("[data-cms='aboutPhoto']");
+      if (aboutPhoto) {
+        aboutPhoto.style.backgroundImage =
+          'linear-gradient(160deg, rgba(13,10,8,0.15), rgba(13,10,8,0.45)), url("' +
+          data.images.about +
+          '")';
+        aboutPhoto.style.backgroundSize = "cover";
+        aboutPhoto.style.backgroundPosition = "center";
+        aboutPhoto.innerHTML = "";
+        if (data.images.aboutAlt) {
+          aboutPhoto.setAttribute("aria-label", data.images.aboutAlt);
+        }
       }
     }
     renderTrust(data.trust);
