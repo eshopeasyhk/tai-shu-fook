@@ -118,6 +118,11 @@
     setText("[data-cms='address']", contact.address || "");
     setText("[data-cms='contactTitle']", contact.title || "");
     setText("[data-cms='contactTagline']", contact.tagline || "");
+    document.querySelectorAll("a[data-cms-maps]").forEach(function (a) {
+      if (contact.mapsUrl) a.href = contact.mapsUrl;
+      if (contact.mapsLabel) a.textContent = contact.mapsLabel;
+    });
+
   }
 
   function renderPriceBoard(board, contact) {
