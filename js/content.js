@@ -458,12 +458,14 @@
     if (data.images && data.images.about) {
       var aboutPhoto = document.querySelector("[data-cms='aboutPhoto']");
       if (aboutPhoto) {
-        aboutPhoto.style.backgroundImage =
+        aboutPhoto.style.setProperty(
+          "background-image",
           'linear-gradient(160deg, rgba(13,10,8,0.15), rgba(13,10,8,0.45)), url("' +
-          data.images.about +
-          '")';
-        aboutPhoto.style.backgroundSize = "cover";
-        aboutPhoto.style.backgroundPosition = "center";
+            data.images.about +
+            '")'
+        );
+        aboutPhoto.style.setProperty("background-size", "cover");
+        aboutPhoto.style.setProperty("background-position", "center");
         aboutPhoto.innerHTML = "";
         if (data.images.aboutAlt) {
           aboutPhoto.setAttribute("aria-label", data.images.aboutAlt);
